@@ -15,7 +15,8 @@ public class Task {
     private Boolean notificationStatus; // on or off
     private Boolean hidden;
 
-    public Task(String title, String description, Date toDoDate, String category) {
+    public Task(String id, String title, String description, Date toDoDate, String category) {
+        this.id = id;
         this.title = title;
         this.description = description;
         this.toDoDate = toDoDate;

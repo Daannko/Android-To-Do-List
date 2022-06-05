@@ -1,7 +1,9 @@
 package com.example.androidtodolist;
 
+import android.app.Dialog;
 import android.os.Bundle;
 
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -20,6 +22,8 @@ import com.example.androidtodolist.databinding.ActivityMainBinding;
 
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.Toast;
 
 import java.text.ParseException;
@@ -47,6 +51,31 @@ public class MainActivity extends AppCompatActivity implements CustomAdapter.Ite
         // BAZA DANYCH
         database = new Database(this);
         ////
+
+
+        FloatingActionButton floatingActionButton = findViewById(R.id.fab);
+        floatingActionButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+
+
+
+
+                Dialog dialog = new Dialog(MainActivity.this);
+                dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+                dialog.setCancelable(true);
+                dialog.setContentView(R.layout.layout_list_item_edit);
+
+                WindowManager.LayoutParams lp = new WindowManager.LayoutParams();
+                lp.copyFrom(dialog.getWindow().getAttributes());
+                lp.width = WindowManager.LayoutParams.MATCH_PARENT;
+                lp.height = WindowManager.LayoutParams.MATCH_PARENT;
+                dialog.show();
+                dialog.getWindow().setAttributes(lp);
+
+            }
+        });
 
     Task task = new Task();
         task.setDescription("hehehehehehehhehehEHehehehHEHEHEHEheheheh");
@@ -104,7 +133,7 @@ public class MainActivity extends AppCompatActivity implements CustomAdapter.Ite
 
     @Override
     public void onItemClick(View view, int position) {
-        Toast.makeText(binding.getRoot().getContext(),tasks.get(position).getTitle(),Toast.LENGTH_SHORT).show();
+        //  Toast.makeText(binding.getRoot().getContext(),tasks.get(position).getTitle(),Toast.LENGTH_SHORT).show();
     }
 
     @Override

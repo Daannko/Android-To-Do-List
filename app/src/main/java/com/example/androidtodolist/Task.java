@@ -4,27 +4,95 @@ import java.util.Date;
 
 public class Task {
 
+    private String  id;
     private String title;
     private String description;
     private String category; // name of category
     private Date created;
     private Date doneDate;
-    private Date finishTime;  // date of expi
+    private Date toDoDate;
     private Boolean done;
     private Boolean notificationStatus; // on or off
     private Boolean hidden;
 
-    public Task(String title, String description, Date finishTime, String category) {
+    public Task(String title, String description, Date toDoDate, String category) {
         this.title = title;
         this.description = description;
-        this.finishTime = finishTime;
+        this.toDoDate = toDoDate;
         this.category = category;
     }
 
     public Task() {
     }
 
+    public Task(String  id ,String title, String description, String category, Date created, Date doneDate, Date toDoDate, Boolean done, Boolean notificationStatus, Boolean hidden) {
+        this.id = id;
+        this.title = title;
+        this.description = description;
+        this.category = category;
+        this.created = created;
+        this.doneDate = doneDate;
+        this.toDoDate = toDoDate;
+        this.done = done;
+        this.notificationStatus = notificationStatus;
+        this.hidden = hidden;
+    }
 
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public String getCategory() {
+        return category;
+    }
+
+    public void setCategory(String category) {
+        this.category = category;
+    }
+
+    public Date getDoneDate() {
+        return doneDate;
+    }
+
+    public void setDoneDate(Date doneDate) {
+        this.doneDate = doneDate;
+    }
+
+    public Date getToDoDate() {
+        return toDoDate;
+    }
+
+    public void setToDoDate(Date toDoDate) {
+        this.toDoDate = toDoDate;
+    }
+
+    public Boolean getDone() {
+        return done;
+    }
+
+    public void setDone(Boolean done) {
+        this.done = done;
+    }
+
+    public Boolean getNotificationStatus() {
+        return notificationStatus;
+    }
+
+    public void setNotificationStatus(Boolean notificationStatus) {
+        this.notificationStatus = notificationStatus;
+    }
+
+    public Boolean getHidden() {
+        return hidden;
+    }
+
+    public void setHidden(Boolean hidden) {
+        this.hidden = hidden;
+    }
 
     public String getTitle() {
         return title;
@@ -48,14 +116,6 @@ public class Task {
 
     public void setCreated(Date created) {
         this.created = created;
-    }
-
-    public Date getLastTime() {
-        return lastTime;
-    }
-
-    public void setLastTime(Date lastTime) {
-        this.lastTime = lastTime;
     }
 
     public boolean isDone() {

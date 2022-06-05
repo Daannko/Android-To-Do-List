@@ -1,6 +1,5 @@
 package com.example.androidtodolist;
 
-
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
@@ -44,10 +43,6 @@ public class Database extends SQLiteOpenHelper
         }
     }
 
-    // // // //
-    // // // //
-    // // // //
-
     @Override
     public void onCreate(SQLiteDatabase db)
     {
@@ -55,15 +50,11 @@ public class Database extends SQLiteOpenHelper
         db.execSQL(query);
 
         query = "CREATE TABLE TASKS (ID INTEGER PRIMARY KEY AUTOINCREMENT, CATEGORY_ID REFERENCES CATEGORIES(ID)," +
-                " TITLE TEXT, CONTENT TEXT, DONE TEXT," +
+                " TITLE TEXT, DESCRIPTION TEXT, DONE TEXT," +
                 "DATEREG DATE, DATEDONE DATE, UUID TEXT," +
-                "DATETODO DATE, NOTIFY TEXT)";
+                "DATETODO DATE, NOTIFY TEXT, HIDDEN TEXT)";
         db.execSQL(query);
     }
-
-    // // // //
-    // // // //
-    // // // //
 
     public void initalizeCategories()
     {
@@ -75,10 +66,6 @@ public class Database extends SQLiteOpenHelper
         categories.add("Other");
     }
 
-    // // // //
-    // // // //
-    // // // //
-
     public void databaseDestroy()
     {
         SQLiteDatabase db = this.getWritableDatabase();
@@ -89,20 +76,18 @@ public class Database extends SQLiteOpenHelper
         db.execSQL(query);
     }
 
-
     public void databaseSetUp()
     {
         SQLiteDatabase db = this.getWritableDatabase();
-        // CLEAR
         databaseDestroy();
-        //NEW
+
         String query = "CREATE TABLE CATEGORIES (ID INTEGER PRIMARY KEY AUTOINCREMENT, CATEGORY_NAME TEXT)";
         db.execSQL(query);
 
         query = "CREATE TABLE TASKS (ID INTEGER PRIMARY KEY AUTOINCREMENT, CATEGORY_ID REFERENCES CATEGORIES(ID)," +
-                " TITLE TEXT, CONTENT TEXT, DONE TEXT," +
+                " TITLE TEXT, DESCRIPTION TEXT, DONE TEXT," +
                 "DATEREG DATE, DATEDONE DATE, UUID TEXT," +
-                "DATETODO DATE, NOTIFY TEXT)";
+                "DATETODO DATE, NOTIFY TEXT, HIDDEN TEXT)";
         db.execSQL(query);
 
         upgradeCategories();
@@ -112,10 +97,6 @@ public class Database extends SQLiteOpenHelper
     {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
-
-        //////////////////////////////////////////////
-        //              KATEGORIE                   //
-        //////////////////////////////////////////////
 
         initalizeCategories();
         Collections.sort(categories);
@@ -133,13 +114,14 @@ public class Database extends SQLiteOpenHelper
         SQLiteDatabase db = this.getWritableDatabase();
         Cursor cursor = db.rawQuery(countQuery, null);
         String title = "";
-        String content = "";
+        String description = "";
         String done = "";
         Date dateReg;
         Date dateDone;
         String UUID = "";
         Date toDoDate;
         String notify ="";
+        String hidden = "";
 
         Cursor categoryCursor;
 
@@ -159,24 +141,16 @@ public class Database extends SQLiteOpenHelper
                 if (queryCategoryName.equals(categoryName))
                 {
                     title = cursor.getString(2);
-                    content = cursor.getString(3);
+                    description = cursor.getString(3);
                     done = cursor.getString(4);
                     dateReg = new Date(cursor.getString(5));
                     dateDone = new Date(cursor.getString(6));
                     UUID = cursor.getString(7);
                     toDoDate = new Date(cursor.getString(8));
                     notify = cursor.getString(9);
+                    hidden = cursor.getString(10);
 
-                    Task task = new Task();
-                    task.setTitle(title);
-                    task.setCategory(categoryName);
-                    task.setContent(content);
-                    task.setDone(Boolean.parseBoolean(done));
-                    task.setDateReg(dateReg);
-                    task.setDateDone(dateDone);
-                    task.setUUID(UUID);
-                    task.setToDoDate(toDoDate);
-                    task.setNotify(Boolean.parseBoolean(notify));
+                    Task task = new Task(UUID,title,description,categoryName,dateReg,dateDone,toDoDate,Boolean.parseBoolean(done),Boolean.parseBoolean(notify),Boolean.parseBoolean(hidden));
                     taskList.add(task);
                 }
             } while (cursor.moveToNext());
@@ -190,13 +164,14 @@ public class Database extends SQLiteOpenHelper
         SQLiteDatabase db = this.getWritableDatabase();
         Cursor cursor = db.rawQuery(countQuery, null);
         String title = "";
-        String content = "";
+        String description = "";
         String done = "";
         String dateReg = "";
         String dateDone = "";
         String UUID = "";
         String toDoDate ="";
         String notify ="";
+        String hidden = "";
 
         Cursor categoryCursor;
         String categoryName = "";
@@ -209,7 +184,7 @@ public class Database extends SQLiteOpenHelper
             do
             {
                 title = cursor.getString(2);
-                content = cursor.getString(3);
+                description = cursor.getString(3);
                 done = cursor.getString(4);
                 dateReg = cursor.getString(5);
                 dateDone = cursor.getString(6);
@@ -228,14 +203,14 @@ public class Database extends SQLiteOpenHelper
                 Task task = new Task();
                 task.setTitle(title);
                 task.setCategory(categoryName);
-                task.setContent(content);
+                task.setDescription(description);
                 task.setDone(Boolean.parseBoolean(done));
-                task.setDateReg(sdf.parse(dateReg));
+                task.setCreated(sdf.parse(dateReg));
                 if( Boolean.parseBoolean(done))
-                    task.setDateDone(sdf.parse(dateDone));
-                task.setUUID(UUID);
+                    task.setDoneDate(sdf.parse(dateDone));
+                task.setId(UUID);
                 task.setToDoDate(sdf.parse(toDoDate));
-                task.setNotify(Boolean.parseBoolean(notify));
+                task.setNotificationStatus(Boolean.parseBoolean(notify));
                 taskList.add(task);
             } while (cursor.moveToNext());
         }
@@ -256,24 +231,29 @@ public class Database extends SQLiteOpenHelper
 
         contentValues.put("CATEGORY_ID", catID);
         contentValues.put("TITLE", task.getTitle());
-        contentValues.put("CONTENT", task.getContent());
+        contentValues.put("DESCRIPTION", task.getDescription());
         contentValues.put("DONE", task.getDone().toString());
-        contentValues.put("DATEREG", task.getDateRegString());
+        contentValues.put("DATEREG", task.getCreated().toString());
         if( task.getDone() )
-            contentValues.put("DATEDONE", task.getDateDoneString());
+            contentValues.put("DATEDONE", task.getDoneDate().toString());
         else
             contentValues.putNull("DATEDONE");
-        contentValues.put("UUID", task.getUUID());
-        contentValues.put("DATETODO", task.getToDoDateString());
-        contentValues.put("NOTIFY", task.getNotify().toString());
+        contentValues.put("UUID", task.getId());
+        contentValues.put("DATETODO", task.getToDoDate().toString());
+        contentValues.put("NOTIFY", task.getNotificationStatus().toString());
         db.insert("TASKS", null, contentValues);
     }
+
 
     public void deleteTask(Task task)
     {
         SQLiteDatabase db = this.getWritableDatabase();
-        db.delete("TASKS", "UUID=?", new String[]{task.getUUID()});
+        db.delete("TASKS", "UUID=?", new String[]{task.getId()});
     }
+
+    // // // //
+    // // // //
+    // // // //
 
     public void editTask(Task task)
     {
@@ -289,19 +269,19 @@ public class Database extends SQLiteOpenHelper
 
         contentValues.put("CATEGORY_ID", catID);
         contentValues.put("TITLE", task.getTitle());
-        contentValues.put("CONTENT", task.getContent());
+        contentValues.put("CONTENT", task.getDescription());
         contentValues.put("DONE", task.getDone().toString());
-        contentValues.put("DATEREG", task.getDateRegString());
+        contentValues.put("DATEREG", task.getCreated().toString());
         if( task.getDone() )
-            contentValues.put("DATEDONE", task.getDateDoneString());
+            contentValues.put("DATEDONE", task.getDoneDate().toString());
         else
             contentValues.putNull("DATEDONE");
-        contentValues.put("UUID", task.getUUID());
-        contentValues.put("DATETODO", task.getToDoDateString());
-        contentValues.put("NOTIFY", task.getNotify().toString());
+        contentValues.put("UUID", task.getId());
+        contentValues.put("DATETODO", task.getToDoDate().toString());
+        contentValues.put("NOTIFY", task.getNotificationStatus().toString());
         // Update database:
         db.update("TASKS",contentValues,"UUID=?",
-                new String[]{task.getUUID()});
+                new String[]{task.getId()});
     }
 
     public void displayTasks()

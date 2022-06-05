@@ -15,24 +15,27 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.androidtodolist.R;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
 public class CustomAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
-    private ArrayList<Task> mData;
-    private ItemClickListener mClickListener;
+    private static ArrayList<Task> mData;
+    private static ItemClickListener mClickListener;
+    SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy HH:mm");
 
     CustomAdapter(ArrayList<Task> data,ItemClickListener mClickListener) {
-        this.mData = data;
-        this.mClickListener = mClickListener;
+        mData = data;
+        CustomAdapter.mClickListener = mClickListener;
     }
 
+    @NonNull
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.layout_list_item, parent, false);
-        return new ViewHolder(view);
+        return new TaskViewHolder(view);
     }
 
 
@@ -40,8 +43,47 @@ public class CustomAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder viewHolder, int position) {
 
+
         TaskViewHolder holder = (TaskViewHolder) viewHolder;
         holder.title.setText(mData.get(position).getTitle());
+        holder.category.setText(mData.get(position).getCategory());
+        holder.description.setText(mData.get(position).getDescription());
+        if(mData.get(position).getDone())
+        {
+            holder.done.setChecked(true);
+        }
+        if(mData.get(position).getDoneDate() == null)
+        {
+            holder.doneDate.setText("");
+        }
+        else
+        {
+            holder.doneDate.setText(mData.get(position).getDoneDate());
+        }
+        holder.toDoDate.setText(mData.get(position).getToDoDate());
+        holder.created.setText(mData.get(position).getCreated());
+        if(holder.done.isChecked())
+        {
+            holder.doneDate.setText(mData.get(position).getDoneDate());
+        }
+        else
+        {
+            holder.doneDate.setText("");
+        }
+
+        if (mData.get(position).getNotificationStatus())
+        {
+            holder.notificationButton.setText("ON");
+            holder.notificationButton.setBackgroundResource(R.drawable.onoffbutton);
+            holder.notificationButton.setChecked(true);
+        }
+        else
+        {
+            holder.notificationButton.setText("OFF");
+            holder.notificationButton.setBackgroundResource(R.drawable.onoffbutton);
+            holder.notificationButton.setChecked(false);
+
+        }
 
     }
 
@@ -57,7 +99,7 @@ public class CustomAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
         String  id;
         TextView title;
         TextView description;
-        TextView category; // name of category
+        TextView category;
         TextView created;
         TextView doneDate;
         TextView toDoDate;
@@ -88,34 +130,36 @@ public class CustomAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
             editButton.setOnClickListener(this);
             done.setOnClickListener(this);
 
+
             MainActivity mainactivity = (MainActivity) itemView.getContext();
 
+            done.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    if(done.isChecked())
+                    {
+                        mData.get(getAdapterPosition()).setDone(true);
+                        mData.get(getAdapterPosition()).setDoneDate(new Date());
+                        doneDate.setText(mData.get(getAdapterPosition()).getDoneDate());
+                    }
+                    else
+                    {
+                        mData.get(getAdapterPosition()).setDone(false);
+                        mData.get(getAdapterPosition()).setDoneDate(null);
+                        doneDate.setText("");
+                    }
+                    mainactivity.database.editTask(mData.get(getAdapterPosition()));
+                }
+            });
+
         }
-
-
-
 
         @Override
         public void onClick(View view) {
+            mClickListener.onItemClick(view,getAdapterPosition());
         }
     }
 
-
-    // stores and recycles views as they are scrolled off screen
-    public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
-        TextView myTextView;
-
-        ViewHolder(View itemView) {
-            super(itemView);
-            myTextView = itemView.findViewById(R.id.task_title);
-            itemView.setOnClickListener(this);
-        }
-
-        @Override
-        public void onClick(View view) {
-            if (mClickListener != null) mClickListener.onItemClick(view, getAdapterPosition());
-        }
-    }
 
     // allows clicks events to be caught
     void setClickListener(ItemClickListener itemClickListener) {

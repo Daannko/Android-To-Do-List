@@ -1,5 +1,6 @@
 package com.example.androidtodolist;
 
+import android.annotation.SuppressLint;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
@@ -51,7 +52,7 @@ public class Database extends SQLiteOpenHelper
 
         query = "CREATE TABLE TASKS (ID INTEGER PRIMARY KEY AUTOINCREMENT, CATEGORY_ID REFERENCES CATEGORIES(ID)," +
                 " TITLE TEXT, DESCRIPTION TEXT, DONE TEXT," +
-                "DATEREG DATE, DATEDONE DATE, UUID TEXT," +
+                "CREATED DATE, DATEDONE DATE, UUID TEXT," +
                 "DATETODO DATE, NOTIFY TEXT, HIDDEN TEXT)";
         db.execSQL(query);
     }
@@ -86,7 +87,7 @@ public class Database extends SQLiteOpenHelper
 
         query = "CREATE TABLE TASKS (ID INTEGER PRIMARY KEY AUTOINCREMENT, CATEGORY_ID REFERENCES CATEGORIES(ID)," +
                 " TITLE TEXT, DESCRIPTION TEXT, DONE TEXT," +
-                "DATEREG DATE, DATEDONE DATE, UUID TEXT," +
+                "CREATED DATE, DATEDONE DATE, UUID TEXT," +
                 "DATETODO DATE, NOTIFY TEXT, HIDDEN TEXT)";
         db.execSQL(query);
 
@@ -116,7 +117,7 @@ public class Database extends SQLiteOpenHelper
         String title = "";
         String description = "";
         String done = "";
-        Date dateReg;
+        Date created;
         Date dateDone;
         String UUID = "";
         Date toDoDate;
@@ -143,14 +144,14 @@ public class Database extends SQLiteOpenHelper
                     title = cursor.getString(2);
                     description = cursor.getString(3);
                     done = cursor.getString(4);
-                    dateReg = new Date(cursor.getString(5));
+                    created = new Date(cursor.getString(5));
                     dateDone = new Date(cursor.getString(6));
                     UUID = cursor.getString(7);
                     toDoDate = new Date(cursor.getString(8));
                     notify = cursor.getString(9);
                     hidden = cursor.getString(10);
 
-                    Task task = new Task(UUID,title,description,categoryName,dateReg,dateDone,toDoDate,Boolean.parseBoolean(done),Boolean.parseBoolean(notify),Boolean.parseBoolean(hidden));
+                    Task task = new Task(UUID,title,description,categoryName,created,dateDone,toDoDate,Boolean.parseBoolean(done),Boolean.parseBoolean(notify),Boolean.parseBoolean(hidden));
                     taskList.add(task);
                 }
             } while (cursor.moveToNext());
@@ -166,7 +167,7 @@ public class Database extends SQLiteOpenHelper
         String title = "";
         String description = "";
         String done = "";
-        String dateReg = "";
+        String created = "";
         String dateDone = "";
         String UUID = "";
         String toDoDate ="";
@@ -186,7 +187,7 @@ public class Database extends SQLiteOpenHelper
                 title = cursor.getString(2);
                 description = cursor.getString(3);
                 done = cursor.getString(4);
-                dateReg = cursor.getString(5);
+                created = cursor.getString(5);
                 dateDone = cursor.getString(6);
                 UUID = cursor.getString(7);
                 toDoDate = cursor.getString(8);
@@ -205,7 +206,10 @@ public class Database extends SQLiteOpenHelper
                 task.setCategory(categoryName);
                 task.setDescription(description);
                 task.setDone(Boolean.parseBoolean(done));
-                task.setCreated(sdf.parse(dateReg));
+
+
+
+                task.setCreated(sdf.parse(created));
                 if( Boolean.parseBoolean(done))
                     task.setDoneDate(sdf.parse(dateDone));
                 task.setId(UUID);
@@ -219,6 +223,7 @@ public class Database extends SQLiteOpenHelper
 
     public void addTask(Task task)
     {
+        @SuppressLint("SimpleDateFormat") SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy HH:mm");
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
         String query = "SELECT ID FROM CATEGORIES WHERE CATEGORY_NAME LIKE '" + task.getCategory() + "'";
@@ -233,13 +238,13 @@ public class Database extends SQLiteOpenHelper
         contentValues.put("TITLE", task.getTitle());
         contentValues.put("DESCRIPTION", task.getDescription());
         contentValues.put("DONE", task.getDone().toString());
-        contentValues.put("DATEREG", task.getCreated().toString());
+        contentValues.put("CREATED",task.getCreated());
         if( task.getDone() )
-            contentValues.put("DATEDONE", task.getDoneDate().toString());
+            contentValues.put("DATEDONE", task.getDoneDate());
         else
             contentValues.putNull("DATEDONE");
         contentValues.put("UUID", task.getId());
-        contentValues.put("DATETODO", task.getToDoDate().toString());
+        contentValues.put("DATETODO", task.getToDoDate());
         contentValues.put("NOTIFY", task.getNotificationStatus().toString());
         db.insert("TASKS", null, contentValues);
     }
@@ -269,15 +274,15 @@ public class Database extends SQLiteOpenHelper
 
         contentValues.put("CATEGORY_ID", catID);
         contentValues.put("TITLE", task.getTitle());
-        contentValues.put("CONTENT", task.getDescription());
+        contentValues.put("DESCRIPTION", task.getDescription());
         contentValues.put("DONE", task.getDone().toString());
-        contentValues.put("DATEREG", task.getCreated().toString());
+        contentValues.put("CREATED", task.getCreated());
         if( task.getDone() )
-            contentValues.put("DATEDONE", task.getDoneDate().toString());
+            contentValues.put("DATEDONE", task.getDoneDate());
         else
             contentValues.putNull("DATEDONE");
         contentValues.put("UUID", task.getId());
-        contentValues.put("DATETODO", task.getToDoDate().toString());
+        contentValues.put("DATETODO", task.getToDoDate());
         contentValues.put("NOTIFY", task.getNotificationStatus().toString());
         // Update database:
         db.update("TASKS",contentValues,"UUID=?",

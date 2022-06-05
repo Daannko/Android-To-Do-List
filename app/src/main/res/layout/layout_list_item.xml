@@ -45,7 +45,7 @@
                     android:layout_gravity="center"
                     android:text="Category"
                     android:textColor="#838383"
-                    android:textSize="15dp"
+                    android:textSize="25dp"
                     android:textStyle="bold" />
 
 
@@ -58,7 +58,7 @@
                     android:layout_marginBottom="10dp"
                     android:text="Content"
                     android:textColor="@color/off"
-                    android:textSize="25dp" />
+                    android:textSize="20dp" />
 
 
 
@@ -81,9 +81,9 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
+                        android:textSize="20dp"
                         android:layout_marginLeft="5dp"
                         android:text="Deadline: "
-                        android:textAlignment="center"
                         android:textColor="@color/black" />
 
                     <TextView
@@ -91,6 +91,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
+                        android:textSize="20dp"
                         android:text=""
                         android:textAlignment="center"
                         android:textColor="@color/black" />
@@ -106,9 +107,9 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
+                        android:textSize="20dp"
                         android:layout_marginLeft="5dp"
                         android:text="Done: "
-                        android:textAlignment="center"
                         android:textColor="@color/black" />
 
                     <TextView
@@ -116,6 +117,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
+                        android:textSize="20dp"
                         android:text=""
                         android:textAlignment="center"
                         android:textColor="@color/black" />
@@ -135,9 +137,9 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
+                        android:textSize="20dp"
                         android:layout_marginLeft="5dp"
                         android:text="Created: "
-                        android:textAlignment="center"
                         android:textColor="@color/black" />
 
                     <TextView
@@ -145,6 +147,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
+                        android:textSize="20dp"
                         android:text=""
                         android:textAlignment="center"
                         android:textColor="@color/black" />
@@ -204,6 +207,7 @@
                     android:id="@+id/deleteButton"
                     android:layout_width="61dp"
                     android:layout_height="37dp"
+                    android:layout_marginBottom="10dp"
                     android:layout_marginLeft="10dp"
                     android:text="DELETE"
                     android:background="@drawable/round_corner_edit"/>
@@ -220,10 +224,8 @@
                     android:textColor="@color/black"
                     android:textSize="20dp" />
 
-
-
             </LinearLayout>
-
+            
         </LinearLayout>
 
     </androidx.cardview.widget.CardView>

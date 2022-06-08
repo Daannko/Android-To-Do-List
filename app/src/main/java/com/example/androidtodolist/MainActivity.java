@@ -1,51 +1,50 @@
 package com.example.androidtodolist;
 
+import android.annotation.SuppressLint;
 import android.app.Dialog;
-import android.content.res.Resources;
 import android.content.res.TypedArray;
 import android.os.Build;
 import android.os.Bundle;
-
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
-
-import androidx.annotation.RequiresApi;
-import androidx.appcompat.app.AppCompatActivity;
-
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.View;
-
-import androidx.recyclerview.widget.DefaultItemAnimator;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-
-import com.example.androidtodolist.databinding.ActivityMainBinding;
-
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.TimePicker;
-import android.widget.Toast;
+
+import androidx.annotation.RequiresApi;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.DefaultItemAnimator;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
+import com.example.androidtodolist.databinding.ActivityMainBinding;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
-import java.util.regex.Pattern;
+import java.util.Locale;
 
 public class MainActivity extends AppCompatActivity implements CustomAdapter.ItemClickListener {
 
     private ActivityMainBinding binding;
     CustomAdapter adapter;
     ArrayList<Task> tasks;
-    CustomAdapter.ItemClickListener itemClickListener;
+    ArrayList<Task> allTasks;
     Database database;
+    static EditText search;
     SimpleDateFormat sdf = new SimpleDateFormat("HH:mm dd/MM/yyyy");
+    static ArrayList<CategoriesModel> categoriesModels = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,13 +58,51 @@ public class MainActivity extends AppCompatActivity implements CustomAdapter.Ite
         ////
 
 
-        FloatingActionButton floatingActionButton = findViewById(R.id.fab);
-        floatingActionButton.setOnClickListener(new View.OnClickListener() {
+        FloatingActionButton floatingActionButtonAdd = findViewById(R.id.fabAdd);
+        floatingActionButtonAdd.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 createAddDialog();
             }
         });
+        FloatingActionButton floatingActionButtonSet = findViewById(R.id.fabSet);
+        floatingActionButtonSet.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                createCategoriesDialog();
+            }
+        });
+        FloatingActionButton floatingActionButtonCat = findViewById(R.id.fabCat);
+        floatingActionButtonCat.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                createCategoriesDialog();
+            }
+        });
+        search = findViewById(R.id.search_input);
+        search.addTextChangedListener(new TextWatcher() {
+
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+                tasks = filterTasks(allTasks);
+                setUpAdapter();
+
+            }
+        });
+
+        TypedArray typedArray = getResources().obtainTypedArray(R.array.categories);
+
+        for(int i = 0 ; i < typedArray.length() ; i++) {
+            categoriesModels.add(new CategoriesModel(true,typedArray.getString(i)));
+        }
 
         loadTasksFromDatabase();
 
@@ -75,9 +112,27 @@ public class MainActivity extends AppCompatActivity implements CustomAdapter.Ite
 
     public static ArrayList<Task> filterTasks(ArrayList<Task> arr)
     {
+        ArrayList<Task> sortedList = new ArrayList<>();
         Collections.sort(arr,new CustomComparator());
+        ArrayList<String> actualCategories = new ArrayList<>();
+        for(CategoriesModel cm : categoriesModels)
+        {
+            if(cm.getSelected()) actualCategories.add(cm.getName());
+        }
 
 
+        for(Task t : arr)
+        {
+
+            if(t.getTitle().toLowerCase(Locale.ROOT).contains(search.getText().toString().toLowerCase(Locale.ROOT)) )
+            {
+                if(!actualCategories.contains(t.getCategory())) continue;
+                if(true == t.getDone()) continue;
+                sortedList.add(t);
+            }
+        }
+
+        return sortedList;
     }
 
 
@@ -85,26 +140,29 @@ public class MainActivity extends AppCompatActivity implements CustomAdapter.Ite
     {
         try
         {
-            tasks = database.getTasks();
-
+            allTasks = database.getTasks();
+            tasks = filterTasks(allTasks);
         }
         catch (ParseException e)
         {
             e.printStackTrace();
         }
-        if (tasks.isEmpty()) {
-
-            Toast.makeText(binding.getRoot().getContext(), "No tasks!", Toast.LENGTH_SHORT).show();
-        } /*else {
-            isEmptyTextView.setText("");
-        }*/
-        //Collections.sort(listOfTasks, new CustomComparator());
-
         setUpAdapter();
     }
 
     public void setUpAdapter()
     {
+        if (tasks.isEmpty()) {
+
+            TextView emptyList = findViewById(R.id.empty_list);
+            emptyList.setVisibility(View.VISIBLE);
+
+        } else {
+
+            TextView emptyList = findViewById(R.id.empty_list);
+            emptyList.setVisibility(View.GONE);
+        }
+
         RecyclerView rv = findViewById(R.id.MyRecycleViewer);
         rv.setItemAnimator(new DefaultItemAnimator());
 
@@ -142,7 +200,7 @@ public class MainActivity extends AppCompatActivity implements CustomAdapter.Ite
         WindowManager.LayoutParams lp = new WindowManager.LayoutParams();
         lp.copyFrom(dialog.getWindow().getAttributes());
         lp.width = WindowManager.LayoutParams.MATCH_PARENT;
-        lp.height = WindowManager.LayoutParams.MATCH_PARENT;
+        lp.height = WindowManager.LayoutParams.WRAP_CONTENT;
 
         EditText title = dialog.findViewById(R.id.titleTextInput);
         EditText  description = dialog.findViewById(R.id.descriptionTextInput);
@@ -178,7 +236,6 @@ public class MainActivity extends AppCompatActivity implements CustomAdapter.Ite
 
                 if(title != null)
                 {
-
                     try {
                         Task task = new Task();
                         task.setTitle(title.getText().toString());
@@ -280,11 +337,59 @@ public class MainActivity extends AppCompatActivity implements CustomAdapter.Ite
         dialog.getWindow().setAttributes(lp);
     }
 
+    public void createCategoriesDialog()
+    {
+        Dialog dialog = new Dialog(MainActivity.this);
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        dialog.setCancelable(true);
+        dialog.setContentView(R.layout.layout_list_of_categories);
+
+        WindowManager.LayoutParams lp = new WindowManager.LayoutParams();
+        lp.copyFrom(dialog.getWindow().getAttributes());
+        lp.width = WindowManager.LayoutParams.WRAP_CONTENT;
+        lp.height = WindowManager.LayoutParams.WRAP_CONTENT;
+
+        CategoriesAdapter adapter = new CategoriesAdapter(this,categoriesModels,MainActivity.this);
+
+        ListView listView = dialog.findViewById(R.id.listViewOfCategories);
+        listView.setAdapter(adapter);
+
+        dialog.show();
+        dialog.getWindow().setAttributes(lp);
+
+
+    }
+
+    public void createSettingsDialog()
+    {
+        Dialog dialog = new Dialog(MainActivity.this);
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        dialog.setCancelable(true);
+        dialog.setContentView(R.layout.layout_list_of_categories);
+
+        WindowManager.LayoutParams lp = new WindowManager.LayoutParams();
+        lp.copyFrom(dialog.getWindow().getAttributes());
+        lp.width = WindowManager.LayoutParams.WRAP_CONTENT;
+        lp.height = WindowManager.LayoutParams.WRAP_CONTENT;
+
+        CategoriesAdapter adapter = new CategoriesAdapter(this,categoriesModels,MainActivity.this);
+
+        ListView listView = dialog.findViewById(R.id.listViewOfCategories);
+        listView.setAdapter(adapter);
+
+        dialog.show();
+        dialog.getWindow().setAttributes(lp);
+
+
+    }
+
+
     @Override
     public void onPointerCaptureChanged(boolean hasCapture) {
         super.onPointerCaptureChanged(hasCapture);
     }
 
+    @SuppressLint("ResourceType")
     @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
     public void onItemClick(View v, int position) {
@@ -301,7 +406,7 @@ public class MainActivity extends AppCompatActivity implements CustomAdapter.Ite
                 }
                 break;
 
-            case 2131296393:
+            case R.id.cv:
                 LinearLayout linearLayout = v.findViewById(R.id.expand_view);
                 TextView textView = v.findViewById(R.id.notExpandedTaskDateInput);
                 if(linearLayout.getVisibility() != View.VISIBLE)
@@ -318,6 +423,10 @@ public class MainActivity extends AppCompatActivity implements CustomAdapter.Ite
             case R.id.editButton:
                 createEditDialog(tasks.get(position));
                 break;
+            case R.id.cb:
+                categoriesModels.get(position).changeSelected();
+                tasks = filterTasks(allTasks);
+                setUpAdapter();
         }
     }
 

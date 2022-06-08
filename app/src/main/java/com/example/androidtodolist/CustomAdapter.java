@@ -62,6 +62,7 @@ public class CustomAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
             holder.doneDate.setText(mData.get(position).getDoneDate());
         }
         holder.toDoDate.setText(mData.get(position).getToDoDate());
+        holder.notExpandedTaskDateInput.setText(mData.get(position).getToDoDate());
         holder.created.setText(mData.get(position).getCreated());
         if(holder.done.isChecked())
         {
@@ -107,6 +108,7 @@ public class CustomAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
         CheckBox done;
         Button deleteButton;
         Button editButton;
+        TextView notExpandedTaskDateInput;
         Boolean notificationStatus;
         Boolean hidden;
         ToggleButton notificationButton;
@@ -125,6 +127,7 @@ public class CustomAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
             deleteButton = itemView.findViewById(R.id.editButton);
             editButton = itemView.findViewById(R.id.deleteButton);
             notificationButton = itemView.findViewById(R.id.notificationButton);
+            notExpandedTaskDateInput = itemView.findViewById(R.id.notExpandedTaskDateInput);
             taskView.setOnClickListener(this);
             title.setOnClickListener(this);
             deleteButton.setOnClickListener(this);

@@ -17,4 +17,5 @@
     <color name="off">#424242</color>
     <color name="red">#FF0000</color>
     <color name="lightgray">#BDBDBD</color>
+    <color name="greyish">#575757</color>
 </resources>

@@ -15,7 +15,7 @@ public class Task {
     private Boolean done;
     private Boolean notificationStatus; // on or off
     private Boolean hidden;
-    SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy HH:mm");
+    SimpleDateFormat sdf = new SimpleDateFormat("HH:mm dd/MM/yyyy");
 
     public Task(String id, String title, String description, Date toDoDate, String category) {
         this.id = id;
@@ -144,5 +144,9 @@ public class Task {
 
     public void setHidden(boolean hidden) {
         this.hidden = hidden;
+    }
+
+    public Date getToDoDateD(){
+        return toDoDate;
     }
 }

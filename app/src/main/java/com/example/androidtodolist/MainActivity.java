@@ -34,7 +34,9 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
+import java.util.regex.Pattern;
 
 public class MainActivity extends AppCompatActivity implements CustomAdapter.ItemClickListener {
 
@@ -43,7 +45,7 @@ public class MainActivity extends AppCompatActivity implements CustomAdapter.Ite
     ArrayList<Task> tasks;
     CustomAdapter.ItemClickListener itemClickListener;
     Database database;
-    SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy HH:mm");
+    SimpleDateFormat sdf = new SimpleDateFormat("HH:mm dd/MM/yyyy");
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -71,11 +73,20 @@ public class MainActivity extends AppCompatActivity implements CustomAdapter.Ite
 
     }
 
+    public static ArrayList<Task> filterTasks(ArrayList<Task> arr)
+    {
+        Collections.sort(arr,new CustomComparator());
+
+
+    }
+
+
     public void loadTasksFromDatabase()
     {
         try
         {
             tasks = database.getTasks();
+
         }
         catch (ParseException e)
         {
@@ -145,14 +156,14 @@ public class MainActivity extends AppCompatActivity implements CustomAdapter.Ite
         description.setText(oldTask.getDescription());
 
         String oldDate = oldTask.getToDoDate();
-        String[] oldDateInfo = oldDate.split(" :");
-        datePicker.updateDate(Integer.parseInt(oldDateInfo[2]),Integer.parseInt(oldDateInfo[1])-1,Integer.parseInt(oldDateInfo[0]));
-        timePicker.setHour(Integer.parseInt(oldDateInfo[3]));
-        timePicker.setMinute(Integer.parseInt(oldDateInfo[4]));
+        String[] oldDateInfo = oldDate.split("\\s|:|-|/");
+        datePicker.updateDate(Integer.parseInt(oldDateInfo[4]),Integer.parseInt(oldDateInfo[3])-1,Integer.parseInt(oldDateInfo[2]));
+        timePicker.setHour(Integer.parseInt(oldDateInfo[0]));
+        timePicker.setMinute(Integer.parseInt(oldDateInfo[1]));
 
         TypedArray typedArray = getResources().obtainTypedArray(R.array.categories);
 
-        for(int i = 0 ; i < typedArray.getIndexCount() ; i++) {
+        for(int i = 0 ; i < typedArray.length() ; i++) {
             if(oldTask.getCategory().equals(typedArray.getString(i)))
             {
                 spinner.setSelection(i);
@@ -160,9 +171,7 @@ public class MainActivity extends AppCompatActivity implements CustomAdapter.Ite
             }
         }
 
-
         button.setOnClickListener(new View.OnClickListener() {
-            @RequiresApi(api = Build.VERSION_CODES.M)
             @Override
             public void onClick(View view) {
 
@@ -180,14 +189,15 @@ public class MainActivity extends AppCompatActivity implements CustomAdapter.Ite
                         task.setHidden(false);
                         task.setId(oldTask.getId());
                         task.setCategory(spinner.getSelectedItem().toString());
-                        String toDoDate = datePicker.getDayOfMonth()
-                                +"-"+(datePicker.getMonth()+1)
-                                +"-"+datePicker.getYear()
-                                +" "+timePicker.getHour()
-                                +":"+timePicker.getMinute();
+                        String toDoDate = timePicker.getHour()
+                                +":"+timePicker.getMinute()
+                                +" "+datePicker.getDayOfMonth()
+                                +"/"+(datePicker.getMonth()+1)
+                                +"/"+datePicker.getYear();
                         task.setToDoDate(sdf.parse(toDoDate));
 
-                        database.upda(task);
+
+                        database.editTask(task);
 
                         loadTasksFromDatabase();
 
@@ -215,7 +225,7 @@ public class MainActivity extends AppCompatActivity implements CustomAdapter.Ite
         WindowManager.LayoutParams lp = new WindowManager.LayoutParams();
         lp.copyFrom(dialog.getWindow().getAttributes());
         lp.width = WindowManager.LayoutParams.MATCH_PARENT;
-        lp.height = WindowManager.LayoutParams.MATCH_PARENT;
+        lp.height = WindowManager.LayoutParams.WRAP_CONTENT;
 
         EditText title = dialog.findViewById(R.id.titleTextInput);
         EditText  description = dialog.findViewById(R.id.descriptionTextInput);
@@ -244,11 +254,11 @@ public class MainActivity extends AppCompatActivity implements CustomAdapter.Ite
                         task.setNotificationStatus(false);
                         task.setHidden(false);
                         task.setCategory(spinner.getSelectedItem().toString());
-                        String toDoDate = datePicker.getDayOfMonth()
-                                +"-"+(datePicker.getMonth()+1)
-                                +"-"+datePicker.getYear()
-                                +" "+timePicker.getHour()
-                                +":"+timePicker.getMinute();
+                        String toDoDate = timePicker.getHour()
+                                +":"+timePicker.getMinute()
+                                +" "+datePicker.getDayOfMonth()
+                                +"/"+(datePicker.getMonth()+1)
+                                +"/"+datePicker.getYear();
                         task.setToDoDate(sdf.parse(toDoDate));
 
                         database.addTask(task);
@@ -275,6 +285,7 @@ public class MainActivity extends AppCompatActivity implements CustomAdapter.Ite
         super.onPointerCaptureChanged(hasCapture);
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
     public void onItemClick(View v, int position) {
 
@@ -290,7 +301,7 @@ public class MainActivity extends AppCompatActivity implements CustomAdapter.Ite
                 }
                 break;
 
-            case 2131230852:
+            case 2131296393:
                 LinearLayout linearLayout = v.findViewById(R.id.expand_view);
                 TextView textView = v.findViewById(R.id.notExpandedTaskDateInput);
                 if(linearLayout.getVisibility() != View.VISIBLE)
@@ -303,6 +314,7 @@ public class MainActivity extends AppCompatActivity implements CustomAdapter.Ite
                     textView.setTextColor(getResources().getColor(R.color.greyish));
                     linearLayout.setVisibility(View.GONE);
                 }
+                break;
             case R.id.editButton:
                 createEditDialog(tasks.get(position));
                 break;

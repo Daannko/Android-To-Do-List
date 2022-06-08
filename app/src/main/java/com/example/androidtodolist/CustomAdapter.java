@@ -15,6 +15,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.androidtodolist.R;
 
+import java.nio.file.Watchable;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -151,6 +152,7 @@ public class CustomAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
                     mainactivity.database.editTask(mData.get(getAdapterPosition()));
                 }
             });
+
 
         }
 

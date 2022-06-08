@@ -189,7 +189,7 @@ public class Database extends SQLiteOpenHelper
                 done = cursor.getString(4);
                 created = cursor.getString(5);
                 dateDone = cursor.getString(6);
-                UUID = cursor.getString(7);
+                UUID = cursor.getString(0);
                 toDoDate = cursor.getString(8);
                 notify = cursor.getString(9);
 
@@ -253,7 +253,7 @@ public class Database extends SQLiteOpenHelper
     public void deleteTask(Task task)
     {
         SQLiteDatabase db = this.getWritableDatabase();
-        db.delete("TASKS", "UUID=?", new String[]{task.getId()});
+        db.delete("TASKS", "ID=?", new String[]{task.getId()});
     }
 
     // // // //
@@ -285,7 +285,7 @@ public class Database extends SQLiteOpenHelper
         contentValues.put("DATETODO", task.getToDoDate());
         contentValues.put("NOTIFY", task.getNotificationStatus().toString());
         // Update database:
-        db.update("TASKS",contentValues,"UUID=?",
+        db.update("TASKS",contentValues,"ID=?",
                 new String[]{task.getId()});
     }
 

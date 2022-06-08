@@ -1,5 +1,6 @@
 package com.example.androidtodolist;
 
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
 public class Task {
@@ -14,6 +15,7 @@ public class Task {
     private Boolean done;
     private Boolean notificationStatus; // on or off
     private Boolean hidden;
+    SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy HH:mm");
 
     public Task(String id, String title, String description, Date toDoDate, String category) {
         this.id = id;
@@ -55,16 +57,17 @@ public class Task {
         this.category = category;
     }
 
-    public Date getDoneDate() {
-        return doneDate;
+    public String getDoneDate() {
+        if(doneDate == null) return null;
+        return sdf.format(doneDate);
     }
 
     public void setDoneDate(Date doneDate) {
         this.doneDate = doneDate;
     }
 
-    public Date getToDoDate() {
-        return toDoDate;
+    public String getToDoDate() {
+        return sdf.format(toDoDate);
     }
 
     public void setToDoDate(Date toDoDate) {
@@ -111,8 +114,8 @@ public class Task {
         this.description = description;
     }
 
-    public Date getCreated() {
-        return created;
+    public String getCreated() {
+        return sdf.format(created);
     }
 
     public void setCreated(Date created) {

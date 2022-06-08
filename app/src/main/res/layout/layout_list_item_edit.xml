@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/dialogLayout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/bekground"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:background="@color/bekground"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <Spinner
+            android:id="@+id/categorySpinner"
+            android:layout_width="match_parent"
+            android:layout_height="42dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:background="@drawable/rounded_spinner"
+            android:entries="@array/categories"
+            android:textAlignment="center"
+            android:spinnerMode="dropdown" />
+
+        <com.google.android.material.textfield.TextInputEditText
+
+            android:id="@+id/titleTextInput"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Title"
+            android:textSize="25sp"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:ellipsize="end"
+            tools:ignore="HardcodedText" />
+
+
+        <com.google.android.material.textfield.TextInputEditText
+
+            android:id="@+id/descriptionTextInput"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Description"
+            android:ellipsize="end"
+            android:textSize="25sp"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"/>
+
+
+
+            />
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <DatePicker
+                android:id="@+id/calendarView"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:calendarViewShown="false"
+                android:datePickerMode="spinner"
+                android:scaleX="0.8"
+                android:scaleY="0.8"
+                app:layout_constraintStart_toStartOf="parent" />
+
+            <TimePicker
+                android:id="@+id/timePicker"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:calendarViewShown="false"
+                android:scaleX="0.8"
+                android:scaleY="0.8"
+                android:timePickerMode="spinner"
+                app:layout_constraintEnd_toEndOf="parent" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/dialogSaveButton"
+            android:layout_width="144dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:background="@drawable/rounded_corners"
+            android:text="Save"
+            android:textColor="@color/white" />
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/h2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/h3"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/v1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/v2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/v3"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+    </LinearLayout>
+</LinearLayout>

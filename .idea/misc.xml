@@ -9,13 +9,16 @@
         <entry key="..\:/Users/Daniel/AndroidStudioProjects/AndroidToDoList/app/src/main/res/drawable/round_corner_edit.xml" value="0.315" />
         <entry key="..\:/Users/Daniel/AndroidStudioProjects/AndroidToDoList/app/src/main/res/drawable/rounded_corners.xml" value="0.2365" />
         <entry key="..\:/Users/Daniel/AndroidStudioProjects/AndroidToDoList/app/src/main/res/drawable/rounded_spinner.xml" value="0.2365" />
-        <entry key="..\:/Users/Daniel/AndroidStudioProjects/AndroidToDoList/app/src/main/res/layout-land/activity_main.xml" value="0.2640625" />
+        <entry key="..\:/Users/Daniel/AndroidStudioProjects/AndroidToDoList/app/src/main/res/layout-land/activity_main.xml" value="0.22" />
+        <entry key="..\:/Users/Daniel/AndroidStudioProjects/AndroidToDoList/app/src/main/res/layout-land/layout_list_item.xml" value="0.2984375" />
+        <entry key="..\:/Users/Daniel/AndroidStudioProjects/AndroidToDoList/app/src/main/res/layout-land/layout_list_item_edit.xml" value="0.2640625" />
+        <entry key="..\:/Users/Daniel/AndroidStudioProjects/AndroidToDoList/app/src/main/res/layout-land/setup_layout.xml" value="0.33" />
         <entry key="..\:/Users/Daniel/AndroidStudioProjects/AndroidToDoList/app/src/main/res/layout/activity_main.xml" value="0.1" />
         <entry key="..\:/Users/Daniel/AndroidStudioProjects/AndroidToDoList/app/src/main/res/layout/category_chose_list.xml" value="0.2" />
         <entry key="..\:/Users/Daniel/AndroidStudioProjects/AndroidToDoList/app/src/main/res/layout/content_main.xml" value="0.1" />
         <entry key="..\:/Users/Daniel/AndroidStudioProjects/AndroidToDoList/app/src/main/res/layout/fragment_first.xml" value="0.19166666666666668" />
         <entry key="..\:/Users/Daniel/AndroidStudioProjects/AndroidToDoList/app/src/main/res/layout/fragment_second.xml" value="0.1" />
-        <entry key="..\:/Users/Daniel/AndroidStudioProjects/AndroidToDoList/app/src/main/res/layout/layout_list_item.xml" value="0.33" />
+        <entry key="..\:/Users/Daniel/AndroidStudioProjects/AndroidToDoList/app/src/main/res/layout/layout_list_item.xml" value="0.1" />
         <entry key="..\:/Users/Daniel/AndroidStudioProjects/AndroidToDoList/app/src/main/res/layout/layout_list_item_edit.xml" value="0.2" />
         <entry key="..\:/Users/Daniel/AndroidStudioProjects/AndroidToDoList/app/src/main/res/layout/layout_list_of_categories.xml" value="0.1" />
         <entry key="..\:/Users/Daniel/AndroidStudioProjects/AndroidToDoList/app/src/main/res/layout/setup_layout.xml" value="0.37083333333333335" />

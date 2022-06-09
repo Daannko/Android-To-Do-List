@@ -2,12 +2,15 @@ package com.example.androidtodolist;
 
 import android.annotation.SuppressLint;
 import android.app.Dialog;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
 import android.content.SharedPreferences;
 import android.content.res.TypedArray;
 import android.os.Build;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.view.Gravity;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
@@ -63,6 +66,8 @@ public class MainActivity extends AppCompatActivity implements CustomAdapter.Ite
 
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
+
+        createNotificationChannel();
 
         // BAZA DANYCH
         database = new Database(this);
@@ -254,6 +259,14 @@ public class MainActivity extends AppCompatActivity implements CustomAdapter.Ite
             @Override
             public void onClick(View view) {
 
+                if(title.getText().length() == 0 || description.getText().length() == 0)
+                {
+                    title.setHint("Title");
+                    title.setHintTextColor(getResources().getColor(R.color.red));
+                    description.setHint("Description");
+                    description.setHintTextColor(getResources().getColor(R.color.red));
+                    return;
+                }
 
                 if(title != null)
                 {
@@ -319,6 +332,15 @@ public class MainActivity extends AppCompatActivity implements CustomAdapter.Ite
             @Override
             public void onClick(View view) {
 
+
+                if(title.getText().length() == 0 || description.getText().length() == 0)
+                {
+                    title.setHint("Title");
+                    title.setHintTextColor(getResources().getColor(R.color.red));
+                    description.setHint("Description");
+                    description.setHintTextColor(getResources().getColor(R.color.red));
+                    return;
+                }
 
                 if(title != null)
                 {
@@ -488,7 +510,18 @@ public class MainActivity extends AppCompatActivity implements CustomAdapter.Ite
         }
     }
 
-
-
+    private void createNotificationChannel()
+    {
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
+        {
+            CharSequence name = "MyChannel";
+            String description = "Channel for notifications";
+            int importance = NotificationManager.IMPORTANCE_HIGH;
+            NotificationChannel notificationChannel = new NotificationChannel("notifychannel", name, importance);
+            notificationChannel.setDescription(description);
+            NotificationManager notificationManager = getSystemService(NotificationManager.class);
+            notificationManager.createNotificationChannel(notificationChannel);
+        }
+    }
 
 }

@@ -20,19 +20,18 @@
             android:id="@+id/spinnerCategory"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textSize="25sp"
+            android:textSize="20sp"
             android:textAlignment="center"
             android:text="Category"
-            android:layout_marginTop="15dp"
+            android:layout_marginTop="10dp"
             android:layout_marginLeft="10dp"
             android:layout_marginRight="10dp"
-            android:layout_marginBottom="15dp"
             tools:ignore="HardcodedText" />
 
         <Spinner
             android:id="@+id/categorySpinner"
             android:layout_width="match_parent"
-            android:layout_height="42dp"
+            android:layout_height="30dp"
 
             android:layout_marginLeft="10dp"
             android:layout_marginRight="10dp"
@@ -47,8 +46,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="Title"
-            android:textSize="25sp"
-            android:layout_marginTop="15dp"
+            android:textSize="20sp"
+            android:layout_marginTop="5dp"
             android:layout_marginLeft="10dp"
             android:layout_marginRight="10dp"
             android:ellipsize="end"
@@ -61,20 +60,21 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="Description"
-            android:layout_marginTop="15dp"
+            android:layout_marginTop="5dp"
             android:ellipsize="end"
-            android:textSize="25sp"
+            android:textSize="20sp"
             android:layout_marginLeft="10dp"
             android:layout_marginRight="10dp"/>
-            />
+        />
 
-        <androidx.constraintlayout.widget.ConstraintLayout
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
             <DatePicker
                 android:id="@+id/calendarView"
                 android:layout_width="0dp"
+                android:layout_weight="2"
                 android:layout_height="wrap_content"
                 android:calendarViewShown="false"
                 android:datePickerMode="spinner"
@@ -85,23 +85,29 @@
             <TimePicker
                 android:id="@+id/timePicker"
                 android:layout_width="0dp"
+                android:layout_weight="2"
                 android:layout_height="wrap_content"
                 android:calendarViewShown="false"
                 android:scaleX="0.8"
                 android:scaleY="0.8"
                 android:timePickerMode="spinner"
-                app:layout_constraintEnd_toEndOf="parent" />
+                app:layout_constraintStart_toEndOf="@+id/calendarView" />
 
-        </androidx.constraintlayout.widget.ConstraintLayout>
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/dialogSaveButton"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:background="@drawable/rounded_corners"
+                android:layout_marginRight="30dp"
+                android:layout_marginLeft="40dp"
+                android:text="Save"
+                android:textColor="@color/white" />
 
-        <androidx.appcompat.widget.AppCompatButton
-            android:id="@+id/dialogSaveButton"
-            android:layout_width="144dp"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:background="@drawable/rounded_corners"
-            android:text="Save"
-            android:textColor="@color/white" />
+        </LinearLayout>
+
+
 
         <androidx.constraintlayout.widget.Guideline
             android:id="@+id/h2"

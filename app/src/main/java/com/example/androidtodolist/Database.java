@@ -178,7 +178,7 @@ public class Database extends SQLiteOpenHelper
         String categoryName = "";
 
         ArrayList<Task> taskList = new ArrayList<Task>();
-        SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy HH:mm");
+        SimpleDateFormat sdf = new SimpleDateFormat("HH:mm dd/MM/yyyy");
 
         if (cursor != null && cursor.moveToFirst())
         {
@@ -288,6 +288,8 @@ public class Database extends SQLiteOpenHelper
         db.update("TASKS",contentValues,"ID=?",
                 new String[]{task.getId()});
     }
+
+
 
     public void displayTasks()
     {

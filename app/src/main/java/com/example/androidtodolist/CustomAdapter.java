@@ -6,6 +6,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.TextView;
 import android.widget.ToggleButton;
 
@@ -62,6 +63,7 @@ public class CustomAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
             holder.doneDate.setText(mData.get(position).getDoneDate());
         }
         holder.toDoDate.setText(mData.get(position).getToDoDate());
+        holder.notExpandedTaskDateInput.setText(mData.get(position).getToDoDate());
         holder.created.setText(mData.get(position).getCreated());
         if(holder.done.isChecked())
         {
@@ -75,15 +77,15 @@ public class CustomAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
         if (mData.get(position).getNotificationStatus())
         {
             holder.notificationButton.setText("ON");
-            holder.notificationButton.setBackgroundResource(R.drawable.onoffbutton);
+            holder.notificationButton.setBackgroundResource(R.drawable.onbutton);
             holder.notificationButton.setChecked(true);
+
         }
         else
         {
             holder.notificationButton.setText("OFF");
             holder.notificationButton.setBackgroundResource(R.drawable.onoffbutton);
             holder.notificationButton.setChecked(false);
-
         }
 
     }
@@ -107,10 +109,10 @@ public class CustomAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
         CheckBox done;
         Button deleteButton;
         Button editButton;
+        TextView notExpandedTaskDateInput;
         Boolean notificationStatus;
-        Boolean hidden;
         ToggleButton notificationButton;
-
+        Sender sender;
 
         public TaskViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -125,14 +127,45 @@ public class CustomAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
             deleteButton = itemView.findViewById(R.id.editButton);
             editButton = itemView.findViewById(R.id.deleteButton);
             notificationButton = itemView.findViewById(R.id.notificationButton);
+            notExpandedTaskDateInput = itemView.findViewById(R.id.notExpandedTaskDateInput);
             taskView.setOnClickListener(this);
             title.setOnClickListener(this);
             deleteButton.setOnClickListener(this);
             editButton.setOnClickListener(this);
             done.setOnClickListener(this);
 
-
             MainActivity mainactivity = (MainActivity) itemView.getContext();
+
+
+            notificationButton.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                @Override
+                public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                    if (b)
+                    {
+                        notificationButton.setBackgroundResource(R.drawable.onbutton);
+                        mainactivity.tasks.get(getAdapterPosition()).setNotificationStatus(true);
+                        long timeToSleep =   mainactivity.tasks.get(getAdapterPosition()).getToDoDateD().getTime() - new Date().getTime() - ((long)MainActivity.notificationTime * 60000 );
+                        sender = new Sender(mainactivity, mainactivity.tasks.get(getAdapterPosition()), timeToSleep);
+                        System.out.println(timeToSleep);
+                        sender.start();
+//                        sender.interrupt();
+                    }
+                    else
+                    {
+                        notificationButton.setBackgroundResource(R.drawable.onoffbutton);
+                        mainactivity.tasks.get(getAdapterPosition()).setNotificationStatus(false);
+                        if (sender != null)
+                            sender.interrupt();
+                    }
+                    mainactivity.database.editTask(mainactivity.tasks.get(getAdapterPosition()));
+
+                }
+            });
+
+
+
+
+
 
             done.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -152,6 +185,7 @@ public class CustomAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
                     mainactivity.database.editTask(mData.get(getAdapterPosition()));
                 }
             });
+
 
 
         }

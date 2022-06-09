@@ -2,6 +2,7 @@ package com.example.androidtodolist;
 
 import android.annotation.SuppressLint;
 import android.app.Dialog;
+import android.content.SharedPreferences;
 import android.content.res.TypedArray;
 import android.os.Build;
 import android.os.Bundle;
@@ -16,6 +17,7 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.Spinner;
+import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.TimePicker;
 
@@ -33,7 +35,9 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.Locale;
+import java.util.Set;
 
 public class MainActivity extends AppCompatActivity implements CustomAdapter.ItemClickListener {
 
@@ -41,10 +45,17 @@ public class MainActivity extends AppCompatActivity implements CustomAdapter.Ite
     CustomAdapter adapter;
     ArrayList<Task> tasks;
     ArrayList<Task> allTasks;
+
+
     Database database;
+
     static EditText search;
+    static boolean hideDone;
+    static int notificationTime;
+    static ArrayList<CategoriesModel> categoriesModels;
+
     SimpleDateFormat sdf = new SimpleDateFormat("HH:mm dd/MM/yyyy");
-    static ArrayList<CategoriesModel> categoriesModels = new ArrayList<>();
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,6 +68,8 @@ public class MainActivity extends AppCompatActivity implements CustomAdapter.Ite
         database = new Database(this);
         ////
 
+        categoriesModels = new ArrayList<>();
+        loadFromSharedPreferences();
 
         FloatingActionButton floatingActionButtonAdd = findViewById(R.id.fabAdd);
         floatingActionButtonAdd.setOnClickListener(new View.OnClickListener() {
@@ -69,14 +82,7 @@ public class MainActivity extends AppCompatActivity implements CustomAdapter.Ite
         floatingActionButtonSet.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                createCategoriesDialog();
-            }
-        });
-        FloatingActionButton floatingActionButtonCat = findViewById(R.id.fabCat);
-        floatingActionButtonCat.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                createCategoriesDialog();
+                createSettingsDialog();
             }
         });
         search = findViewById(R.id.search_input);
@@ -99,10 +105,6 @@ public class MainActivity extends AppCompatActivity implements CustomAdapter.Ite
         });
 
         TypedArray typedArray = getResources().obtainTypedArray(R.array.categories);
-
-        for(int i = 0 ; i < typedArray.length() ; i++) {
-            categoriesModels.add(new CategoriesModel(true,typedArray.getString(i)));
-        }
 
         loadTasksFromDatabase();
 
@@ -127,7 +129,7 @@ public class MainActivity extends AppCompatActivity implements CustomAdapter.Ite
             if(t.getTitle().toLowerCase(Locale.ROOT).contains(search.getText().toString().toLowerCase(Locale.ROOT)) )
             {
                 if(!actualCategories.contains(t.getCategory())) continue;
-                if(true == t.getDone()) continue;
+                if(hideDone && t.getDone()) continue;
                 sortedList.add(t);
             }
         }
@@ -187,6 +189,25 @@ public class MainActivity extends AppCompatActivity implements CustomAdapter.Ite
         });
 
         rv.setAdapter(adapter);
+    }
+
+    public void loadFromSharedPreferences()
+    {
+        SharedPreferences preferences = getSharedPreferences("PrefsFile", MODE_PRIVATE);
+        String checks = "";
+        hideDone = preferences.getBoolean("HideDone", false);
+        notificationTime = preferences.getInt("NotificationTime", 60);
+        checks = preferences.getString("SelectedCategories","11111");
+        TypedArray typedArray = getResources().obtainTypedArray(R.array.categories);
+        for(int i = 0; i < typedArray.length(); i++)
+        {
+            boolean temp = false;
+            if(checks.charAt(i) == '1')
+            {
+                temp = true;
+            }
+            categoriesModels.add(new CategoriesModel(temp,typedArray.getString(i)));
+        }
     }
 
     @RequiresApi(api = Build.VERSION_CODES.M)
@@ -337,45 +358,82 @@ public class MainActivity extends AppCompatActivity implements CustomAdapter.Ite
         dialog.getWindow().setAttributes(lp);
     }
 
-    public void createCategoriesDialog()
-    {
-        Dialog dialog = new Dialog(MainActivity.this);
-        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-        dialog.setCancelable(true);
-        dialog.setContentView(R.layout.layout_list_of_categories);
 
-        WindowManager.LayoutParams lp = new WindowManager.LayoutParams();
-        lp.copyFrom(dialog.getWindow().getAttributes());
-        lp.width = WindowManager.LayoutParams.WRAP_CONTENT;
-        lp.height = WindowManager.LayoutParams.WRAP_CONTENT;
-
-        CategoriesAdapter adapter = new CategoriesAdapter(this,categoriesModels,MainActivity.this);
-
-        ListView listView = dialog.findViewById(R.id.listViewOfCategories);
-        listView.setAdapter(adapter);
-
-        dialog.show();
-        dialog.getWindow().setAttributes(lp);
-
-
-    }
 
     public void createSettingsDialog()
     {
         Dialog dialog = new Dialog(MainActivity.this);
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
         dialog.setCancelable(true);
-        dialog.setContentView(R.layout.layout_list_of_categories);
+        dialog.setContentView(R.layout.setup_layout);
 
         WindowManager.LayoutParams lp = new WindowManager.LayoutParams();
         lp.copyFrom(dialog.getWindow().getAttributes());
         lp.width = WindowManager.LayoutParams.WRAP_CONTENT;
         lp.height = WindowManager.LayoutParams.WRAP_CONTENT;
 
+        Spinner spinner = dialog.findViewById(R.id.setting_spinner);
+        Switch swich = dialog.findViewById(R.id.setting_switch);
+        swich.setChecked(hideDone);
+        Button button = dialog.findViewById(R.id.setting_button);
+
         CategoriesAdapter adapter = new CategoriesAdapter(this,categoriesModels,MainActivity.this);
 
         ListView listView = dialog.findViewById(R.id.listViewOfCategories);
         listView.setAdapter(adapter);
+
+        swich.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(swich.isChecked())
+                {
+                    hideDone = true;
+                    tasks = filterTasks(allTasks);
+                    setUpAdapter();
+                }
+                else
+                {
+                    hideDone = false;
+                    tasks = filterTasks(allTasks);
+                    setUpAdapter();
+                }
+            }
+        });
+
+        button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                SharedPreferences preferences = getSharedPreferences("PrefsFile", MODE_PRIVATE);
+                SharedPreferences.Editor editor = preferences.edit();
+                boolean isChecked = false;
+                if(swich.isChecked())
+                {
+                    isChecked = true;
+                }
+
+                editor.putBoolean("HideDone", isChecked);
+                editor.putInt("NotificationTime",Integer.parseInt(spinner.getSelectedItem().toString()));
+
+                String checks = "";
+                for(CategoriesModel cm : categoriesModels)
+                {
+                    if(cm.getSelected())
+                    {
+                        checks +=  "1";
+                    }
+                    else
+                    {
+                        checks += "0";
+                    }
+                }
+
+                editor.putString("SelectedCategories", checks);
+
+                editor.apply();
+                dialog.dismiss();
+            }
+        });
 
         dialog.show();
         dialog.getWindow().setAttributes(lp);
